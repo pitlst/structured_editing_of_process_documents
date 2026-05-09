@@ -2,31 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import {
-    IconArrowLeft,
-    IconDownload,
-    IconFileDescription,
-    IconPlus,
-} from "@tabler/icons-react"
+import { IconArrowLeft, IconDownload, IconFileDescription, IconPlus } from "@tabler/icons-react"
 
 import type { FillValue, Template, TemplateField } from "@/lib/types"
 import { listTemplates, getTemplate } from "@/lib/mock-api"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogDescription,
-} from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 
@@ -64,30 +47,20 @@ export default function TemplateFillPage() {
         }
     }, [])
 
-    const handleValueChange = useCallback(
-        (fieldId: string, value: string | string[]) => {
-            setFillValues((prev) =>
-                prev.map((fv) => (fv.fieldId === fieldId ? { ...fv, value } : fv))
-            )
-        },
-        []
-    )
+    const handleValueChange = useCallback((fieldId: string, value: string | string[]) => {
+        setFillValues((prev) => prev.map((fv) => (fv.fieldId === fieldId ? { ...fv, value } : fv)))
+    }, [])
 
-    const handleMultiSelectToggle = useCallback(
-        (fieldId: string, optionLabel: string) => {
-            setFillValues((prev) =>
-                prev.map((fv) => {
-                    if (fv.fieldId !== fieldId) return fv
-                    const current = Array.isArray(fv.value) ? fv.value : []
-                    const next = current.includes(optionLabel)
-                        ? current.filter((v) => v !== optionLabel)
-                        : [...current, optionLabel]
-                    return { ...fv, value: next }
-                })
-            )
-        },
-        []
-    )
+    const handleMultiSelectToggle = useCallback((fieldId: string, optionLabel: string) => {
+        setFillValues((prev) =>
+            prev.map((fv) => {
+                if (fv.fieldId !== fieldId) return fv
+                const current = Array.isArray(fv.value) ? fv.value : []
+                const next = current.includes(optionLabel) ? current.filter((v) => v !== optionLabel) : [...current, optionLabel]
+                return { ...fv, value: next }
+            })
+        )
+    }, [])
 
     const handleExport = useCallback(() => {
         setExporting(true)
@@ -114,7 +87,7 @@ export default function TemplateFillPage() {
     return (
         <div className="flex min-h-svh flex-col">
             {/* Header */}
-            <header className="flex shrink-0 items-center gap-3 border-b border-border px-4 py-2 no-print">
+            <header className="no-print flex shrink-0 items-center gap-3 border-b border-border px-4 py-2">
                 <Button variant="ghost" size="icon-sm" onClick={() => router.push("/")}>
                     <IconArrowLeft className="size-4" />
                 </Button>
@@ -122,11 +95,7 @@ export default function TemplateFillPage() {
                 <div className="flex-1" />
                 {selectedTemplate && (
                     <>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleBackToSelect}
-                        >
+                        <Button variant="outline" size="sm" onClick={handleBackToSelect}>
                             返回选择
                         </Button>
                         <Button size="sm" onClick={handleExport} disabled={exporting}>
@@ -150,11 +119,7 @@ export default function TemplateFillPage() {
                                 <div className="flex flex-col items-center gap-3 py-6 text-muted-foreground">
                                     <IconFileDescription className="size-10" />
                                     <p className="text-sm">暂无可用的模板</p>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => router.push("/templates/new")}
-                                    >
+                                    <Button variant="outline" size="sm" onClick={() => router.push("/templates/new")}>
                                         <IconPlus className="size-3.5" />
                                         创建模板
                                     </Button>
@@ -171,8 +136,7 @@ export default function TemplateFillPage() {
                                             <div className="flex-1 truncate">
                                                 <p className="text-xs font-medium">{t.name}</p>
                                                 <p className="text-[10px] text-muted-foreground">
-                                                    {t.fields.length} 个字段 ·{" "}
-                                                    {new Date(t.updatedAt).toLocaleDateString("zh-CN")}
+                                                    {t.fields.length} 个字段 · {new Date(t.updatedAt).toLocaleDateString("zh-CN")}
                                                 </p>
                                             </div>
                                         </button>
@@ -185,18 +149,9 @@ export default function TemplateFillPage() {
             ) : (
                 <div className="relative flex-1 overflow-auto bg-muted/30 p-6">
                     {/* Print area */}
-                    <div
-                        ref={printRef}
-                        className="relative mx-auto inline-block min-w-max bg-white shadow-lg print:shadow-none"
-                        id="print-area"
-                    >
+                    <div ref={printRef} className="relative mx-auto inline-block min-w-max bg-white shadow-lg print:shadow-none" id="print-area">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                            src={selectedTemplate.bgImage}
-                            alt={selectedTemplate.name}
-                            className="block max-w-none select-none"
-                            draggable={false}
-                        />
+                        <img src={selectedTemplate.bgImage} alt={selectedTemplate.name} className="block max-w-none select-none" draggable={false} />
                         {selectedTemplate.fields.map((field) => (
                             <FillField
                                 key={field.id}
@@ -215,9 +170,7 @@ export default function TemplateFillPage() {
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>暂无模板</DialogTitle>
-                        <DialogDescription>
-                            还没有保存任何模板，请先前往模板编辑页面创建模板
-                        </DialogDescription>
+                        <DialogDescription>还没有保存任何模板，请先前往模板编辑页面创建模板</DialogDescription>
                     </DialogHeader>
                     <div className="flex justify-end gap-2">
                         <Button variant="outline" size="sm" onClick={() => router.push("/")}>
@@ -257,10 +210,7 @@ function FillField({
             }}
         >
             {field.type === "select" ? (
-                <Select
-                    value={typeof value === "string" ? value : ""}
-                    onValueChange={onChange}
-                >
+                <Select value={typeof value === "string" ? value : ""} onValueChange={onChange}>
                     <SelectTrigger className="h-full w-full rounded-sm border-dashed border-gray-400 bg-white/80 text-xs print:border-gray-300 print:bg-white">
                         <SelectValue placeholder={field.required ? `${field.label} *` : field.label} />
                     </SelectTrigger>
@@ -282,9 +232,7 @@ function FillField({
                                 type="button"
                                 className={cn(
                                     "rounded-sm px-1 py-0.5 text-[10px] transition-colors print:text-black",
-                                    isSelected
-                                        ? "bg-primary text-primary-foreground"
-                                        : "bg-muted hover:bg-muted/80"
+                                    isSelected ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-muted/80"
                                 )}
                                 onClick={() => onMultiToggle(opt.label)}
                             >
@@ -292,11 +240,7 @@ function FillField({
                             </button>
                         )
                     })}
-                    {field.options.length === 0 && (
-                        <span className="text-muted-foreground">
-                            {field.required ? `${field.label} *` : field.label}
-                        </span>
-                    )}
+                    {field.options.length === 0 && <span className="text-muted-foreground">{field.required ? `${field.label} *` : field.label}</span>}
                 </div>
             ) : (
                 <Input

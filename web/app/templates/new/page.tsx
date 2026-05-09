@@ -2,29 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import {
-    IconArrowLeft,
-    IconChevronDown,
-    IconChevronUp,
-    IconPlus,
-    IconTrash,
-    IconUpload,
-    IconDeviceFloppy,
-    IconGripVertical,
-} from "@tabler/icons-react"
+import { IconArrowLeft, IconChevronDown, IconChevronUp, IconPlus, IconTrash, IconUpload, IconDeviceFloppy, IconGripVertical } from "@tabler/icons-react"
 
 import type { FieldType, TemplateField } from "@/lib/types"
 import { createTemplate } from "@/lib/mock-api"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
@@ -67,21 +52,24 @@ export default function TemplateEditorPage() {
 
     const selectedField = fields.find((f) => f.id === selectedFieldId) ?? null
 
-    const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (!file) return
+    const handleFileUpload = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const file = e.target.files?.[0]
+            if (!file) return
 
-        const reader = new FileReader()
-        reader.onload = (ev) => {
-            const dataUrl = ev.target?.result as string
-            setBgImage(dataUrl)
-            setBgFileName(file.name)
-            if (!templateName) {
-                setTemplateName(file.name.replace(/\.[^.]+$/, ""))
+            const reader = new FileReader()
+            reader.onload = (ev) => {
+                const dataUrl = ev.target?.result as string
+                setBgImage(dataUrl)
+                setBgFileName(file.name)
+                if (!templateName) {
+                    setTemplateName(file.name.replace(/\.[^.]+$/, ""))
+                }
             }
-        }
-        reader.readAsDataURL(file)
-    }, [templateName])
+            reader.readAsDataURL(file)
+        },
+        [templateName]
+    )
 
     const handleCanvasClick = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
@@ -139,11 +127,7 @@ export default function TemplateEditorPage() {
                 const newX = moveEvent.clientX - moveRect.left + moveScrollLeft - dragOffset.current.x
                 const newY = moveEvent.clientY - moveRect.top + moveScrollTop - dragOffset.current.y
 
-                setFields((prev) =>
-                    prev.map((f) =>
-                        f.id === fieldId ? { ...f, x: Math.max(0, newX), y: Math.max(0, newY) } : f
-                    )
-                )
+                setFields((prev) => prev.map((f) => (f.id === fieldId ? { ...f, x: Math.max(0, newX), y: Math.max(0, newY) } : f)))
             }
 
             const handleMouseUp = () => {
@@ -158,12 +142,9 @@ export default function TemplateEditorPage() {
         [fields]
     )
 
-    const updateField = useCallback(
-        (fieldId: string, updates: Partial<TemplateField>) => {
-            setFields((prev) => prev.map((f) => (f.id === fieldId ? { ...f, ...updates } : f)))
-        },
-        []
-    )
+    const updateField = useCallback((fieldId: string, updates: Partial<TemplateField>) => {
+        setFields((prev) => prev.map((f) => (f.id === fieldId ? { ...f, ...updates } : f)))
+    }, [])
 
     const deleteField = useCallback(
         (fieldId: string) => {
@@ -175,50 +156,38 @@ export default function TemplateEditorPage() {
         [selectedFieldId]
     )
 
-    const addOption = useCallback(
-        (fieldId: string) => {
-            setFields((prev) =>
-                prev.map((f) => {
-                    if (f.id !== fieldId) return f
-                    return {
-                        ...f,
-                        options: [
-                            ...f.options,
-                            { id: crypto.randomUUID(), label: `选项 ${f.options.length + 1}` },
-                        ],
-                    }
-                })
-            )
-        },
-        []
-    )
+    const addOption = useCallback((fieldId: string) => {
+        setFields((prev) =>
+            prev.map((f) => {
+                if (f.id !== fieldId) return f
+                return {
+                    ...f,
+                    options: [...f.options, { id: crypto.randomUUID(), label: `选项 ${f.options.length + 1}` }],
+                }
+            })
+        )
+    }, [])
 
-    const updateOption = useCallback(
-        (fieldId: string, optionId: string, label: string) => {
-            setFields((prev) =>
-                prev.map((f) => {
-                    if (f.id !== fieldId) return f
-                    return {
-                        ...f,
-                        options: f.options.map((o) => (o.id === optionId ? { ...o, label } : o)),
-                    }
-                })
-            )
-        },
-        []
-    )
+    const updateOption = useCallback((fieldId: string, optionId: string, label: string) => {
+        setFields((prev) =>
+            prev.map((f) => {
+                if (f.id !== fieldId) return f
+                return {
+                    ...f,
+                    options: f.options.map((o) => (o.id === optionId ? { ...o, label } : o)),
+                }
+            })
+        )
+    }, [])
 
-    const deleteOption = useCallback(
-        (fieldId: string, optionId: string) => {
-            setFields((prev) =>
-                prev.map((f) => {
-                    if (f.id !== fieldId) return f
-                    return { ...f, options: f.options.filter((o) => o.id !== optionId) }
-                })
-            )
-        },
-        []
-    )
+    const deleteOption = useCallback((fieldId: string, optionId: string) => {
+        setFields((prev) =>
+            prev.map((f) => {
+                if (f.id !== fieldId) return f
+                return { ...f, options: f.options.filter((o) => o.id !== optionId) }
+            })
+        )
+    }, [])
 
     const handleSave = useCallback(async () => {
         if (!bgImage || !templateName.trim()) return
@@ -255,33 +224,14 @@ export default function TemplateEditorPage() {
                 <Button variant="ghost" size="icon-sm" onClick={() => router.push("/")}>
                     <IconArrowLeft className="size-4" />
                 </Button>
-                <Input
-                    className="h-7 w-48"
-                    placeholder="模板名称"
-                    value={templateName}
-                    onChange={(e) => setTemplateName(e.target.value)}
-                />
+                <Input className="h-7 w-48" placeholder="模板名称" value={templateName} onChange={(e) => setTemplateName(e.target.value)} />
                 <div className="flex-1" />
-                <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".pdf,.doc,.docx,image/*"
-                    className="hidden"
-                    onChange={handleFileUpload}
-                />
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => fileInputRef.current?.click()}
-                >
+                <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx,image/*" className="hidden" onChange={handleFileUpload} />
+                <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
                     <IconUpload className="size-3.5" />
                     上传背景文件
                 </Button>
-                <Button
-                    size="sm"
-                    disabled={!bgImage || !templateName.trim() || saving}
-                    onClick={handleSave}
-                >
+                <Button size="sm" disabled={!bgImage || !templateName.trim() || saving} onClick={handleSave}>
                     <IconDeviceFloppy className="size-3.5" />
                     {saving ? "保存中..." : "保存模板"}
                 </Button>
@@ -300,17 +250,12 @@ export default function TemplateEditorPage() {
                         >
                             <div className="relative inline-block min-w-full">
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
-                                    src={bgImage}
-                                    alt="背景模板"
-                                    className="block max-w-none select-none"
-                                    draggable={false}
-                                />
+                                <img src={bgImage} alt="背景模板" className="block max-w-none select-none" draggable={false} />
                                 {fields.map((field) => (
                                     <div
                                         key={field.id}
                                         className={cn(
-                                            "absolute cursor-grab rounded-sm border-2 bg-opacity-80 transition-colors",
+                                            "bg-opacity-80 absolute cursor-grab rounded-sm border-2 transition-colors",
                                             FIELD_COLORS[field.type],
                                             selectedFieldId === field.id && "ring-2 ring-ring ring-offset-1",
                                             draggingFieldId === field.id && "cursor-grabbing opacity-80"
@@ -325,9 +270,7 @@ export default function TemplateEditorPage() {
                                     >
                                         <div className="flex h-full items-center gap-1 px-1.5">
                                             <IconGripVertical className="size-3 shrink-0 text-muted-foreground" />
-                                            <span className="truncate text-[10px] font-medium">
-                                                {field.label}
-                                            </span>
+                                            <span className="truncate text-[10px] font-medium">{field.label}</span>
                                             <Badge variant="outline" className="ml-auto shrink-0 text-[9px]">
                                                 {FIELD_TYPE_LABELS[field.type]}
                                             </Badge>
@@ -341,10 +284,7 @@ export default function TemplateEditorPage() {
                             <div className="flex flex-col items-center gap-3 text-muted-foreground">
                                 <IconUpload className="size-10" />
                                 <p className="text-sm">上传 PDF 或 Word 文件作为模板背景</p>
-                                <Button
-                                    variant="outline"
-                                    onClick={() => fileInputRef.current?.click()}
-                                >
+                                <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
                                     选择文件
                                 </Button>
                             </div>
@@ -353,21 +293,12 @@ export default function TemplateEditorPage() {
                 </div>
 
                 {/* Right sidebar - Field list & config */}
-                <div
-                    className={cn(
-                        "flex shrink-0 flex-col border-l border-border bg-card transition-all",
-                        listCollapsed ? "w-10" : "w-72"
-                    )}
-                >
+                <div className={cn("flex shrink-0 flex-col border-l border-border bg-card transition-all", listCollapsed ? "w-10" : "w-72")}>
                     <button
                         className="flex h-8 items-center justify-center border-b border-border text-muted-foreground hover:text-foreground"
                         onClick={() => setListCollapsed(!listCollapsed)}
                     >
-                        {listCollapsed ? (
-                            <IconChevronUp className="size-3.5" />
-                        ) : (
-                            <IconChevronDown className="size-3.5" />
-                        )}
+                        {listCollapsed ? <IconChevronUp className="size-3.5" /> : <IconChevronDown className="size-3.5" />}
                     </button>
 
                     {!listCollapsed && (
@@ -378,21 +309,15 @@ export default function TemplateEditorPage() {
                                     onUpdate={(updates) => updateField(selectedField.id, updates)}
                                     onDelete={() => deleteField(selectedField.id)}
                                     onAddOption={() => addOption(selectedField.id)}
-                                    onUpdateOption={(optId, label) =>
-                                        updateOption(selectedField.id, optId, label)
-                                    }
-                                    onDeleteOption={(optId) =>
-                                        deleteOption(selectedField.id, optId)
-                                    }
+                                    onUpdateOption={(optId, label) => updateOption(selectedField.id, optId, label)}
+                                    onDeleteOption={(optId) => deleteOption(selectedField.id, optId)}
                                 />
                             ) : (
                                 <div className="flex flex-1 flex-col">
                                     <div className="border-b border-border px-3 py-2">
                                         <p className="text-xs font-medium">字段列表</p>
                                         <p className="text-[10px] text-muted-foreground">
-                                            {fields.length === 0
-                                                ? "点击画布添加字段"
-                                                : `共 ${fields.length} 个字段`}
+                                            {fields.length === 0 ? "点击画布添加字段" : `共 ${fields.length} 个字段`}
                                         </p>
                                     </div>
                                     <div className="flex-1 space-y-1 overflow-auto p-2">
@@ -405,12 +330,7 @@ export default function TemplateEditorPage() {
                                                 )}
                                                 onClick={() => setSelectedFieldId(field.id)}
                                             >
-                                                <span
-                                                    className={cn(
-                                                        "size-2 shrink-0 rounded-full",
-                                                        FIELD_DOT_COLORS[field.type]
-                                                    )}
-                                                />
+                                                <span className={cn("size-2 shrink-0 rounded-full", FIELD_DOT_COLORS[field.type])} />
                                                 <span className="flex-1 truncate">{field.label}</span>
                                                 <Badge variant="outline" className="text-[9px]">
                                                     {FIELD_TYPE_LABELS[field.type]}
@@ -450,12 +370,7 @@ function FieldConfigPanel({
             <div className="border-b border-border px-3 py-2">
                 <div className="flex items-center gap-2">
                     <p className="text-xs font-medium">字段配置</p>
-                    <Button
-                        variant="ghost"
-                        size="icon-xs"
-                        className="ml-auto text-destructive hover:text-destructive"
-                        onClick={onDelete}
-                    >
+                    <Button variant="ghost" size="icon-xs" className="ml-auto text-destructive hover:text-destructive" onClick={onDelete}>
                         <IconTrash className="size-3" />
                     </Button>
                 </div>
@@ -464,18 +379,12 @@ function FieldConfigPanel({
             <div className="flex flex-col gap-3 p-3">
                 <div className="space-y-1.5">
                     <Label>字段名称</Label>
-                    <Input
-                        value={field.label}
-                        onChange={(e) => onUpdate({ label: e.target.value })}
-                    />
+                    <Input value={field.label} onChange={(e) => onUpdate({ label: e.target.value })} />
                 </div>
 
                 <div className="space-y-1.5">
                     <Label>字段类型</Label>
-                    <Select
-                        value={field.type}
-                        onValueChange={(v) => onUpdate({ type: v as FieldType })}
-                    >
+                    <Select value={field.type} onValueChange={(v) => onUpdate({ type: v as FieldType })}>
                         <SelectTrigger>
                             <SelectValue />
                         </SelectTrigger>
@@ -491,42 +400,22 @@ function FieldConfigPanel({
                 <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1.5">
                         <Label>宽度 (px)</Label>
-                        <Input
-                            type="number"
-                            value={field.width}
-                            onChange={(e) =>
-                                onUpdate({ width: Math.max(60, Number(e.target.value) || 160) })
-                            }
-                        />
+                        <Input type="number" value={field.width} onChange={(e) => onUpdate({ width: Math.max(60, Number(e.target.value) || 160) })} />
                     </div>
                     <div className="space-y-1.5">
                         <Label>高度 (px)</Label>
-                        <Input
-                            type="number"
-                            value={field.height}
-                            onChange={(e) =>
-                                onUpdate({ height: Math.max(20, Number(e.target.value) || 32) })
-                            }
-                        />
+                        <Input type="number" value={field.height} onChange={(e) => onUpdate({ height: Math.max(20, Number(e.target.value) || 32) })} />
                     </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1.5">
                         <Label>X 坐标</Label>
-                        <Input
-                            type="number"
-                            value={Math.round(field.x)}
-                            onChange={(e) => onUpdate({ x: Number(e.target.value) || 0 })}
-                        />
+                        <Input type="number" value={Math.round(field.x)} onChange={(e) => onUpdate({ x: Number(e.target.value) || 0 })} />
                     </div>
                     <div className="space-y-1.5">
                         <Label>Y 坐标</Label>
-                        <Input
-                            type="number"
-                            value={Math.round(field.y)}
-                            onChange={(e) => onUpdate({ y: Number(e.target.value) || 0 })}
-                        />
+                        <Input type="number" value={Math.round(field.y)} onChange={(e) => onUpdate({ y: Number(e.target.value) || 0 })} />
                     </div>
                 </div>
 
@@ -551,16 +440,10 @@ function FieldConfigPanel({
                             </Button>
                         </div>
                         <div className="space-y-1.5">
-                            {field.options.length === 0 && (
-                                <p className="text-[10px] text-muted-foreground">暂未添加选项</p>
-                            )}
+                            {field.options.length === 0 && <p className="text-[10px] text-muted-foreground">暂未添加选项</p>}
                             {field.options.map((opt) => (
                                 <div key={opt.id} className="flex items-center gap-1.5">
-                                    <Input
-                                        className="h-6 flex-1 text-xs"
-                                        value={opt.label}
-                                        onChange={(e) => onUpdateOption(opt.id, e.target.value)}
-                                    />
+                                    <Input className="h-6 flex-1 text-xs" value={opt.label} onChange={(e) => onUpdateOption(opt.id, e.target.value)} />
                                     <Button
                                         variant="ghost"
                                         size="icon-xs"
@@ -581,10 +464,5 @@ function FieldConfigPanel({
 
 function isTypingTarget(target: EventTarget | null) {
     if (!(target instanceof HTMLElement)) return false
-    return (
-        target.isContentEditable ||
-        target.tagName === "INPUT" ||
-        target.tagName === "TEXTAREA" ||
-        target.tagName === "SELECT"
-    )
+    return target.isContentEditable || target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT"
 }

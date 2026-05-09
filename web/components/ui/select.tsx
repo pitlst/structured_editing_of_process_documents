@@ -23,7 +23,7 @@ function SelectTrigger({ className, children, ...props }: React.ComponentProps<t
         <SelectPrimitive.Trigger
             data-slot="select-trigger"
             className={cn(
-                "flex h-8 w-full items-center justify-between border border-input bg-background px-2.5 text-xs ring-offset-background placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring/50 outline-none disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+                "flex h-8 w-full items-center justify-between border border-input bg-background px-2.5 text-xs ring-offset-background outline-none placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
                 className
             )}
             {...props}
@@ -42,7 +42,7 @@ function SelectContent({ className, children, position = "popper", ...props }: R
             <SelectPrimitive.Content
                 data-slot="select-content"
                 className={cn(
-                    "relative z-50 max-h-72 min-w-[8rem] overflow-hidden border border-border bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+                    "relative z-50 max-h-72 min-w-[8rem] overflow-hidden border border-border bg-popover text-popover-foreground data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
                     position === "popper" &&
                         "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
                     className
@@ -52,10 +52,7 @@ function SelectContent({ className, children, position = "popper", ...props }: R
             >
                 <SelectScrollUpButton />
                 <SelectPrimitive.Viewport
-                    className={cn(
-                        "p-1",
-                        position === "popper" && "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
-                    )}
+                    className={cn("p-1", position === "popper" && "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]")}
                 >
                     {children}
                 </SelectPrimitive.Viewport>
@@ -74,7 +71,7 @@ function SelectItem({ className, children, ...props }: React.ComponentProps<type
         <SelectPrimitive.Item
             data-slot="select-item"
             className={cn(
-                "relative flex w-full cursor-default select-none items-center py-1.5 pl-2 pr-8 text-xs outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+                "relative flex w-full cursor-default items-center py-1.5 pr-8 pl-2 text-xs outline-none select-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
                 className
             )}
             {...props}
