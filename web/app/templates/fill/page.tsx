@@ -1,11 +1,12 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { IconArrowLeft, IconDownload, IconFileDescription, IconPlus } from "@tabler/icons-react"
 
 import type { FillValue, Template, TemplateField } from "@/lib/types"
 import { listTemplates, getTemplate } from "@/lib/mock-api"
+import { generatePdf } from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -15,7 +16,6 @@ import { cn } from "@/lib/utils"
 
 export default function TemplateFillPage() {
     const router = useRouter()
-    const printRef = useRef<HTMLDivElement>(null)
 
     const [templates, setTemplates] = useState<Template[]>([])
     const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null)
@@ -62,14 +62,25 @@ export default function TemplateFillPage() {
         )
     }, [])
 
-    const handleExport = useCallback(() => {
+    const handleExport = useCallback(async () => {
+        if (!selectedTemplate) return
         setExporting(true)
-        // Use browser print dialog (save as PDF)
-        setTimeout(() => {
-            window.print()
+        try {
+            const blob = await generatePdf(selectedTemplate.id, fillValues)
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement("a")
+            a.href = url
+            a.download = `${selectedTemplate.name}.pdf`
+            document.body.appendChild(a)
+            a.click()
+            document.body.removeChild(a)
+            URL.revokeObjectURL(url)
+        } catch {
+            // ignore
+        } finally {
             setExporting(false)
-        }, 100)
-    }, [])
+        }
+    }, [selectedTemplate, fillValues])
 
     const handleBackToSelect = useCallback(() => {
         setSelectedTemplate(null)
@@ -87,7 +98,7 @@ export default function TemplateFillPage() {
     return (
         <div className="flex min-h-svh flex-col">
             {/* Header */}
-            <header className="no-print flex shrink-0 items-center gap-3 border-b border-border px-4 py-2">
+            <header className="flex shrink-0 items-center gap-3 border-b border-border px-4 py-2">
                 <Button variant="ghost" size="icon-sm" onClick={() => router.push("/")}>
                     <IconArrowLeft className="size-4" />
                 </Button>
@@ -149,7 +160,7 @@ export default function TemplateFillPage() {
             ) : (
                 <div className="relative flex-1 overflow-auto bg-muted/30 p-6">
                     {/* Print area */}
-                    <div ref={printRef} className="relative mx-auto inline-block min-w-max bg-white shadow-lg print:shadow-none" id="print-area">
+                    <div className="relative mx-auto inline-block min-w-max bg-white shadow-lg">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={selectedTemplate.bgImage} alt={selectedTemplate.name} className="block max-w-none select-none" draggable={false} />
                         {selectedTemplate.fields.map((field) => (
@@ -211,7 +222,7 @@ function FillField({
         >
             {field.type === "select" ? (
                 <Select value={typeof value === "string" ? value : ""} onValueChange={onChange}>
-                    <SelectTrigger className="h-full w-full rounded-sm border-dashed border-gray-400 bg-white/80 text-xs print:border-gray-300 print:bg-white">
+                    <SelectTrigger className="h-full w-full rounded-sm border-dashed border-gray-400 bg-white/80 text-xs">
                         <SelectValue placeholder={field.required ? `${field.label} *` : field.label} />
                     </SelectTrigger>
                     <SelectContent>
@@ -223,7 +234,7 @@ function FillField({
                     </SelectContent>
                 </Select>
             ) : field.type === "multi-select" ? (
-                <div className="flex h-full w-full flex-wrap items-center gap-0.5 overflow-auto rounded-sm border border-dashed border-gray-400 bg-white/80 px-1 py-0.5 text-xs print:border-gray-300 print:bg-white">
+                <div className="flex h-full w-full flex-wrap items-center gap-0.5 overflow-auto rounded-sm border border-dashed border-gray-400 bg-white/80 px-1 py-0.5 text-xs">
                     {field.options.map((opt) => {
                         const isSelected = selectedOptions.includes(opt.label)
                         return (
@@ -231,7 +242,7 @@ function FillField({
                                 key={opt.id}
                                 type="button"
                                 className={cn(
-                                    "rounded-sm px-1 py-0.5 text-[10px] transition-colors print:text-black",
+                                    "rounded-sm px-1 py-0.5 text-[10px] transition-colors",
                                     isSelected ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-muted/80"
                                 )}
                                 onClick={() => onMultiToggle(opt.label)}
@@ -244,7 +255,7 @@ function FillField({
                 </div>
             ) : (
                 <Input
-                    className="h-full w-full rounded-sm border-dashed border-gray-400 bg-white/80 text-xs print:border-gray-300 print:bg-white"
+                    className="h-full w-full rounded-sm border-dashed border-gray-400 bg-white/80 text-xs"
                     type={field.type === "number" ? "number" : "text"}
                     placeholder={field.required ? `${field.label} *` : field.label}
                     value={typeof value === "string" ? value : ""}
