@@ -1,5 +1,5 @@
 [project]
-name = "structured-editing-of-process-documents"
+name = "server"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
